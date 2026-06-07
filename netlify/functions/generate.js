@@ -1,5 +1,4 @@
 const https = require('https');
-exports.handler = async (event) => {
 
 // 簡易レート制限（IPごとに1分10回まで）
 const rateLimit = new Map();
@@ -26,7 +25,7 @@ function checkRateLimit(ip) {
   return true;
 }
 
-
+exports.handler = async (event) => {
   // レート制限チェック
   const ip = event.headers['x-forwarded-for'] || event.headers['client-ip'] || 'unknown';
   if (!checkRateLimit(ip)) {
@@ -36,8 +35,6 @@ function checkRateLimit(ip) {
     };
   }
 
-  // ...以下は既存のコードのまま
-exports.handler = async (event) => {
   if (event.httpMethod !== 'POST') {
     return { statusCode: 405, body: 'Method Not Allowed' };
   }
@@ -58,7 +55,7 @@ exports.handler = async (event) => {
   }
 
   const payload = JSON.stringify({
-　　model: 'claude-sonnet-4-6',
+    model: 'claude-sonnet-4-6',
     max_tokens: 2000,
     system: body.system,
     messages: body.messages,
