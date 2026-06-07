@@ -1,5 +1,42 @@
 const https = require('https');
+exports.handler = async (event) => {
 
+// 簡易レート制限（IPごとに1分10回まで）
+const rateLimit = new Map();
+
+function checkRateLimit(ip) {
+  const now = Date.now();
+  const windowMs = 60 * 1000; // 1分
+  const maxRequests = 10;
+
+  if (!rateLimit.has(ip)) {
+    rateLimit.set(ip, { count: 1, start: now });
+    return true;
+  }
+
+  const record = rateLimit.get(ip);
+  if (now - record.start > windowMs) {
+    rateLimit.set(ip, { count: 1, start: now });
+    return true;
+  }
+
+  if (record.count >= maxRequests) return false;
+
+  record.count++;
+  return true;
+}
+
+
+  // レート制限チェック
+  const ip = event.headers['x-forwarded-for'] || event.headers['client-ip'] || 'unknown';
+  if (!checkRateLimit(ip)) {
+    return {
+      statusCode: 429,
+      body: JSON.stringify({ error: 'リクエストが多すぎます。しばらくお待ちください。' }),
+    };
+  }
+
+  // ...以下は既存のコードのまま
 exports.handler = async (event) => {
   if (event.httpMethod !== 'POST') {
     return { statusCode: 405, body: 'Method Not Allowed' };
