@@ -978,7 +978,7 @@ textarea { min-height: 72px; }
 <script>
 /* ═══════════ SUPABASE 設定 ═══════════ */
 const SUPABASE_URL = 'https://kzhyyqcyaypzdejkooib.supabase.co';
-const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imt6aHl5cWN5YXlwemRlamtvb2liIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA5MjEzODMsImV4cCI6MjA5NjQ5NzM4M30.eM-i2jd3zv7s-6f5jCkCBHw7e9DcOXQ_Ck7l8DC86DA';
+const SUPABASE_ANON_KEY = 'ここにanon keyを貼り付け';
 
 const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 let currentUser = null;
@@ -1209,6 +1209,7 @@ async function saveJutsu() {
     jutsu_description: d.jutsu_description,
     domain_name: d.domain_name,
     domain_reading: d.domain_reading,
+    domain_description: d.domain_description,
     techniques: d.techniques,
     stats: d.stats,
     weakness: d.weakness,
@@ -1318,11 +1319,16 @@ let battleJutsuCache = [];
 
 async function loadBattleOptions() {
   const { data, error } = await sb.from('jutsu')
-    .select('id, jutsu_name, jutsu_reading, jutsu_concept, jutsu_description, techniques, domain_name, domain_description, stats, weakness, rank, user_name')
+    .select('*')
     .order('created_at', { ascending: false })
     .limit(100);
 
-  if (error || !data || data.length < 2) {
+  if (error) {
+    document.getElementById('battle-error').textContent = '術式の読み込みエラー: ' + error.message;
+    document.getElementById('battle-error').classList.add('show');
+    return;
+  }
+  if (!data || data.length < 2) {
     document.getElementById('battle-error').textContent = '対戦には保存済みの術式が2つ以上必要です。まず術式を作って保存しましょう!';
     document.getElementById('battle-error').classList.add('show');
     return;
