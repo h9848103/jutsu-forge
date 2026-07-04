@@ -45,9 +45,42 @@ body {
   line-height: 1.6;
   min-height: 100vh;
   -webkit-font-smoothing: antialiased;
+  position: relative;
+  overflow-x: hidden;
 }
 
-/* ───── NAV ───── */
+/* 呪力の脈動背景 */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(ellipse 55% 40% at 15% 8%,  rgba(139,92,246,0.10) 0%, transparent 60%),
+    radial-gradient(ellipse 45% 35% at 88% 18%, rgba(245,158,11,0.06) 0%, transparent 60%),
+    radial-gradient(ellipse 50% 45% at 50% 95%, rgba(139,92,246,0.07) 0%, transparent 65%);
+  animation: cursePulse 10s ease-in-out infinite;
+}
+body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  opacity: 0.35;
+  background-image:
+    linear-gradient(rgba(139,92,246,0.02) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(139,92,246,0.02) 1px, transparent 1px);
+  background-size: 42px 42px;
+  mask-image: radial-gradient(ellipse 70% 60% at 50% 0%, black 0%, transparent 70%);
+}
+@keyframes cursePulse {
+  0%, 100% { opacity: 0.85; }
+  50%      { opacity: 1.15; }
+}
+nav, .hero, .main, .page { position: relative; z-index: 1; }
+
 nav {
   position: sticky;
   top: 0;
@@ -143,6 +176,22 @@ nav {
   margin: 0 auto;
   padding: 3.5rem 1.5rem 2rem;
   text-align: center;
+  position: relative;
+}
+.hero::before {
+  content: '呪';
+  position: absolute;
+  top: -1.2rem;
+  left: 50%;
+  transform: translateX(-50%);
+  font-family: 'Noto Serif JP', serif;
+  font-size: 9rem;
+  font-weight: 900;
+  color: rgba(139,92,246,0.045);
+  pointer-events: none;
+  line-height: 1;
+  z-index: -1;
+  user-select: none;
 }
 .hero-eyebrow {
   display: inline-flex;
@@ -173,6 +222,7 @@ h1 em {
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
+  filter: drop-shadow(0 0 18px rgba(139,92,246,0.35));
 }
 .hero-desc {
   font-size: 0.95rem;
@@ -311,7 +361,7 @@ textarea { min-height: 72px; }
   width: 100%;
   margin-top: 1.25rem;
   padding: 0.85rem 1.5rem;
-  background: var(--accent);
+  background: linear-gradient(135deg, var(--accent), #6d28d9);
   border: none;
   border-radius: var(--radius);
   color: #fff;
@@ -323,10 +373,10 @@ textarea { min-height: 72px; }
   justify-content: center;
   gap: 0.5rem;
   font-family: inherit;
-  transition: all 0.15s;
-  box-shadow: 0 0 0 1px rgba(139,92,246,0.5);
+  transition: all 0.2s;
+  box-shadow: 0 0 0 1px rgba(139,92,246,0.5), 0 4px 20px rgba(139,92,246,0.15);
 }
-.submit-btn:hover { background: var(--accent-h); transform: translateY(-1px); }
+.submit-btn:hover { background: linear-gradient(135deg, var(--accent-h), #5b21b6); transform: translateY(-1px); box-shadow: 0 0 0 1px rgba(139,92,246,0.6), 0 8px 28px rgba(139,92,246,0.35); }
 .submit-btn:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
 
 .error-box {
@@ -344,24 +394,81 @@ textarea { min-height: 72px; }
 #loading {
   display: none;
   position: fixed; inset: 0; z-index: 999;
-  background: rgba(9,9,11,0.8);
-  backdrop-filter: blur(8px);
+  background: rgba(9,9,11,0.88);
+  backdrop-filter: blur(10px);
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 1.2rem;
+  gap: 1.6rem;
 }
 #loading.on { display: flex; }
-.loader-ring {
-  width: 44px; height: 44px;
-  border: 2px solid rgba(139,92,246,0.2);
-  border-top-color: var(--accent-l);
-  border-radius: 50%;
-  animation: spin 0.8s linear infinite;
+
+/* 呪術陣アニメーション */
+.curse-circle {
+  position: relative;
+  width: 130px;
+  height: 130px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
-@keyframes spin { to { transform: rotate(360deg); } }
-.loader-text { font-size: 0.82rem; color: var(--text3); animation: pulse 1.6s ease-in-out infinite; }
-@keyframes pulse { 0%,100%{opacity:.4} 50%{opacity:1} }
+.curse-circle svg { position: absolute; inset: 0; width: 100%; height: 100%; }
+.ring-outer {
+  animation: spinCW 6s linear infinite;
+  transform-origin: 50% 50%;
+}
+.ring-mid {
+  animation: spinCCW 4.5s linear infinite;
+  transform-origin: 50% 50%;
+}
+.ring-inner {
+  animation: spinCW 2.8s linear infinite;
+  transform-origin: 50% 50%;
+}
+@keyframes spinCW  { to { transform: rotate(360deg); } }
+@keyframes spinCCW { to { transform: rotate(-360deg); } }
+
+.curse-kanji {
+  position: relative;
+  z-index: 2;
+  font-family: 'Noto Serif JP', serif;
+  font-weight: 900;
+  font-size: 2.1rem;
+  color: var(--accent-l);
+  text-shadow: 0 0 18px rgba(139,92,246,0.7), 0 0 36px rgba(139,92,246,0.4);
+  animation: kanjiFade 2s ease-in-out infinite;
+}
+@keyframes kanjiFade {
+  0%, 100% { opacity: 0.55; transform: scale(0.94); }
+  50%      { opacity: 1;    transform: scale(1.04); }
+}
+
+.loader-text {
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--text3);
+  letter-spacing: 0.04em;
+  min-height: 1.4em;
+  transition: opacity 0.2s ease;
+}
+.loader-bar-track {
+  width: 180px;
+  height: 3px;
+  background: var(--border);
+  border-radius: 2px;
+  overflow: hidden;
+}
+.loader-bar-fill {
+  height: 100%;
+  width: 40%;
+  background: linear-gradient(90deg, var(--accent), var(--gold));
+  border-radius: 2px;
+  animation: barSlide 1.3s ease-in-out infinite;
+}
+@keyframes barSlide {
+  0%   { transform: translateX(-100%); }
+  100% { transform: translateX(350%); }
+}
 
 /* ───── RESULT ───── */
 #result-section { display: none; margin-top: 2rem; }
@@ -370,9 +477,23 @@ textarea { min-height: 72px; }
 
 .result-card {
   background: var(--panel);
-  border: 1px solid var(--border);
+  border: 1px solid rgba(139,92,246,0.35);
   border-radius: var(--radius-lg);
   overflow: hidden;
+  box-shadow: 0 0 0 1px rgba(139,92,246,0.06), 0 8px 40px rgba(139,92,246,0.10);
+  position: relative;
+}
+.result-card::after {
+  content: '術';
+  position: absolute;
+  right: -0.5rem;
+  bottom: -1.5rem;
+  font-family: 'Noto Serif JP', serif;
+  font-size: 8rem;
+  font-weight: 900;
+  color: rgba(255,255,255,0.015);
+  pointer-events: none;
+  line-height: 1;
 }
 .result-header {
   padding: 1.5rem 1.5rem 1.25rem;
@@ -752,8 +873,31 @@ textarea { min-height: 72px; }
 <body>
 
 <div id="loading">
-  <div class="loader-ring"></div>
-  <div class="loader-text">術式を構築中…</div>
+  <div class="curse-circle">
+    <svg viewBox="0 0 130 130" class="ring-outer">
+      <circle cx="65" cy="65" r="60" fill="none" stroke="#8b5cf6" stroke-width="1" stroke-opacity="0.35" stroke-dasharray="4 7"/>
+      <g stroke="#a78bfa" stroke-opacity="0.5" stroke-width="1">
+        <line x1="65" y1="5"   x2="65" y2="17"/>
+        <line x1="65" y1="113" x2="65" y2="125"/>
+        <line x1="5"  y1="65"  x2="17" y2="65"/>
+        <line x1="113" y1="65" x2="125" y2="65"/>
+      </g>
+    </svg>
+    <svg viewBox="0 0 130 130" class="ring-mid">
+      <polygon points="65,20 105,45 105,85 65,110 25,85 25,45"
+        fill="none" stroke="#f59e0b" stroke-width="1.2" stroke-opacity="0.4"/>
+    </svg>
+    <svg viewBox="0 0 130 130" class="ring-inner">
+      <circle cx="65" cy="65" r="38" fill="none" stroke="#8b5cf6" stroke-width="1.4" stroke-opacity="0.55"/>
+      <circle cx="65" cy="27"  r="2.5" fill="#a78bfa"/>
+      <circle cx="65" cy="103" r="2.5" fill="#a78bfa"/>
+      <circle cx="27" cy="65"  r="2.5" fill="#f59e0b"/>
+      <circle cx="103" cy="65" r="2.5" fill="#f59e0b"/>
+    </svg>
+    <div class="curse-kanji" id="curse-kanji">呪</div>
+  </div>
+  <div class="loader-text" id="loading-msg">術式を構築中…</div>
+  <div class="loader-bar-track"><div class="loader-bar-fill"></div></div>
 </div>
 
 <div class="toast" id="toast"></div>
@@ -1078,7 +1222,7 @@ async function generateJutsu() {
     return;
   }
 
-  document.getElementById('loading').classList.add('on');
+  startLoading(GEN_MESSAGES);
   document.querySelector('.submit-btn').disabled = true;
   document.getElementById('result-section').classList.remove('show');
 
@@ -1134,7 +1278,7 @@ JSON形式のみで返答。前置き・後置き不要。各文字列は簡潔�
     errEl.textContent = '生成に失敗しました。(' + e.message + ')';
     errEl.classList.add('show');
   } finally {
-    document.getElementById('loading').classList.remove('on');
+    stopLoading();
     document.querySelector('.submit-btn').disabled = false;
   }
 }
@@ -1369,8 +1513,7 @@ async function runBattle() {
   const A = battleJutsuCache.find(x => x.id === idA);
   const B = battleJutsuCache.find(x => x.id === idB);
 
-  document.getElementById('loading').classList.add('on');
-  document.querySelector('.loader-text').textContent = '戦闘をシミュレート中…';
+  startLoading(BATTLE_MESSAGES);
   document.getElementById('battle-btn').disabled = true;
   document.getElementById('battle-result').classList.remove('show');
 
@@ -1439,8 +1582,7 @@ ${jutsuInfo(B)}`;
     errEl.textContent = 'シミュレーションに失敗しました。(' + e.message + ')';
     errEl.classList.add('show');
   } finally {
-    document.getElementById('loading').classList.remove('on');
-    document.querySelector('.loader-text').textContent = '術式を構築中…';
+    stopLoading();
     document.getElementById('battle-btn').disabled = false;
   }
 }
@@ -1464,6 +1606,44 @@ function showToast(msg) {
   clearTimeout(toastTimer);
   toastTimer = setTimeout(() => t.classList.remove('show'), 2500);
 }
+
+/* ═══════════ ローディング演出 ═══════════ */
+const GEN_MESSAGES = ['呪力を練り上げています…', '術式の輪郭を紡いでいます…', '技名を選定中…', '領域を展開しています…', 'もうすぐ顕現します…'];
+const BATTLE_MESSAGES = ['両者の呪力を分析中…', '相性を計算しています…', '戦闘を再構成しています…', '決着の一撃を演算中…', 'まもなく結果が出ます…'];
+const KANJI_CYCLE = ['呪', '術', '式', '顕'];
+
+let loadingInterval = null;
+let kanjiInterval = null;
+
+function startLoading(messages) {
+  document.getElementById('loading').classList.add('on');
+  const msgEl = document.getElementById('loading-msg');
+  const kanjiEl = document.getElementById('curse-kanji');
+  let i = 0, k = 0;
+  msgEl.textContent = messages[0];
+  kanjiEl.textContent = KANJI_CYCLE[0];
+
+  clearInterval(loadingInterval);
+  clearInterval(kanjiInterval);
+
+  loadingInterval = setInterval(() => {
+    i = (i + 1) % messages.length;
+    msgEl.style.opacity = '0';
+    setTimeout(() => { msgEl.textContent = messages[i]; msgEl.style.opacity = '1'; }, 200);
+  }, 1900);
+
+  kanjiInterval = setInterval(() => {
+    k = (k + 1) % KANJI_CYCLE.length;
+    kanjiEl.textContent = KANJI_CYCLE[k];
+  }, 1200);
+}
+
+function stopLoading() {
+  document.getElementById('loading').classList.remove('on');
+  clearInterval(loadingInterval);
+  clearInterval(kanjiInterval);
+}
+
 </script>
 </body>
 </html>
